@@ -5,11 +5,12 @@ do
     f=$(cat /sys/class/thermal/thermal_zone0/temp)
     t=$(echo $f | cut -b -2).$(echo $f | cut -b 3-)°C
     d=$(date '+%a %b %d, %H:%M:%S')
+    w=$(w | head -1)
     mem=$(free -m|grep -e ^Mem)
     total=$(echo $mem|awk '{print $2;}'|numfmt --to si --from-unit=M --format "%2.2f")
     free=$(echo $mem|awk '{print $3;}'|numfmt --to si --from-unit=M --format "%2.2f")
     used=$(echo $mem|awk '{print $4;}'|numfmt --to si --from-unit=M --format "%2.2f")
-    w=$(w | head -1)
-    xsetroot -name "$w | t/f/u $total/$free/$used | $d | $t"
+    freq=$(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | numfmt --to=iec-i --from-unit=K | tr "\n" " ")
+    xsetroot -name "$w | $freq | t/f/u $total/$free/$used | $d | $t"
     sleep 0.9;
 done;
