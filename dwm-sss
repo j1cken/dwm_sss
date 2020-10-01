@@ -5,7 +5,11 @@ do
     f=$(cat /sys/class/thermal/thermal_zone0/temp)
     t=$(echo $f | cut -b -2).$(echo $f | cut -b 3-)°C
     d=$(date '+%a %b %d, %H:%M:%S')
+    mem=$(free -m|grep -e ^Mem)
+    total=$(echo $mem|awk '{print $2;}')
+    free=$(echo $mem|awk '{print $3;}')
+    used=$(echo $mem|awk '{print $4;}')
     w=$(w | head -1)
-    xsetroot -name "$w | $d | $t"
-    sleep 0.1;
+    xsetroot -name "$w | t/f/u $total/$free/$used | $d | $t"
+    sleep 0.9;
 done;
