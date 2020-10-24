@@ -1,5 +1,6 @@
 #! /bin/bash
-
+touch /tmp/procnetstatsrx
+touch /tmp/procnetstatstx
 while true;
 do
     f=$(cat /sys/class/thermal/thermal_zone0/temp)
@@ -11,6 +12,14 @@ do
     free=$(echo $mem|awk '{print $3;}'|numfmt --to si --from-unit=M --format "%2.2f")
     used=$(echo $mem|awk '{print $4;}'|numfmt --to si --from-unit=M --format "%2.2f")
     freq=$(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | numfmt --to=iec-i --from-unit=K | tr "\n" " ")
-    xsetroot -name "$w | $freq | t/f/u $total/$free/$used | $d | $t"
-    sleep 0.9;
+    # set -x
+    rxold=$(cat /tmp/procnetstatsrx)
+    rx=$(cat /proc/net/dev | grep eno1 | awk '{print $2;}' | tee /tmp/procnetstatsrx)
+    rxdelta=$(expr $rx - $rxold | numfmt --to si)
+    txold=$(cat /tmp/procnetstatstx)
+    tx=$(cat /proc/net/dev | grep eno1 | awk '{print $10;}' | tee /tmp/procnetstatstx)
+    txdelta=$(expr $tx - $txold | numfmt --to si)
+    # set +x
+    xsetroot -name "$w | $freq | t/f/u $total/$free/$used | rx/tx $rxdelta/$txdelta | $d | $t"
+    sleep 1;
 done;
