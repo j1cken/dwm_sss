@@ -1,4 +1,5 @@
 #! /bin/bash
+IF=enp12s0u1
 touch /tmp/procnetstatsrx
 touch /tmp/procnetstatstx
 while true;
@@ -14,10 +15,10 @@ do
     freq=$(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | numfmt --to=iec-i --from-unit=K | tr "\n" " ")
     # set -x
     rxold=$(cat /tmp/procnetstatsrx)
-    rx=$(cat /proc/net/dev | grep eno1 | awk '{print $2;}' | tee /tmp/procnetstatsrx)
+    rx=$(cat /proc/net/dev | grep ${IF} | awk '{print $2;}' | tee /tmp/procnetstatsrx)
     rxdelta=$(expr $rx - $rxold | numfmt --to si)
     txold=$(cat /tmp/procnetstatstx)
-    tx=$(cat /proc/net/dev | grep eno1 | awk '{print $10;}' | tee /tmp/procnetstatstx)
+    tx=$(cat /proc/net/dev | grep ${IF} | awk '{print $10;}' | tee /tmp/procnetstatstx)
     txdelta=$(expr $tx - $txold | numfmt --to si)
     # set +x
     xsetroot -name "$w | $freq | t/f/u $total/$free/$used | rx/tx $rxdelta/$txdelta | $d | $t"
