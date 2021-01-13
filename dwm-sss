@@ -2,6 +2,7 @@
 IF=enp12s0u1
 touch /tmp/procnetstatsrx
 touch /tmp/procnetstatstx
+i=0
 while true;
 do
     f=$(cat /sys/class/thermal/thermal_zone0/temp)
@@ -20,7 +21,12 @@ do
     txold=$(cat /tmp/procnetstatstx)
     tx=$(cat /proc/net/dev | grep ${IF} | awk '{print $10;}' | tee /tmp/procnetstatstx)
     txdelta=$(expr $tx - $txold | numfmt --to si)
+    if [ $i == 5 ]; then
+    	hetzner=$(ssh hetzner2 w | grep load | cut -f 5 -d ":")
+	i=0
+    fi
     # set +x
-    xsetroot -name "$w | $freq | t/f/u $total/$free/$used | rx/tx $rxdelta/$txdelta | $d | $t"
-    sleep 1;
-done;
+    xsetroot -name "hetzner: $hetzner | $w | $freq | t/f/u $total/$free/$used | rx/tx $rxdelta/$txdelta | $d | $t"
+    sleep 1
+    i=$(( $i + 1 ))
+done
