@@ -1,5 +1,6 @@
 #! /bin/bash
-IF=enp12s0u1
+#IF=enp12s0u1
+IF=enp0s31f6
 touch /tmp/procnetstatsrx
 touch /tmp/procnetstatstx
 i=0
